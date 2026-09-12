@@ -1,8 +1,3 @@
-/**
- * Simple localStorage-based storage utilities
- * This is a reliable fallback that works in all browsers
- */
-
 import React from 'react'
 
 export const STORAGE_KEYS = {
@@ -13,57 +8,13 @@ export const STORAGE_KEYS = {
 
 type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS]
 
-/**
- * Read data from localStorage
- */
-export function readFromStorage<T>(key: StorageKey): T | null {
-  try {
-    const data = localStorage.getItem(key)
-    if (data === null) {
-      console.log(`📖 Storage: No data found for key '${key}'`)
-      return null
-    }
-    const parsed = JSON.parse(data) as T
-    console.log(`📖 Storage: Successfully read data for key '${key}'`, parsed)
-    return parsed
-  } catch (error) {
-    console.error(`❌ Failed to read data for key '${key}':`, error)
-    return null
-  }
-}
+const API_BASE = 'http://localhost:3000/api';
 
-/**
- * Write data to localStorage
- */
-export function writeToStorage<T>(key: StorageKey, data: T): boolean {
-  try {
-    const jsonString = JSON.stringify(data)
-    localStorage.setItem(key, jsonString)
-    console.log(`💾 Storage: Successfully wrote data for key '${key}'`, data)
-    return true
-  } catch (error) {
-    console.error(`❌ Failed to write data for key '${key}':`, error)
-    return false
-  }
-}
+const getHeaders = () => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${localStorage.getItem('token')}`
+});
 
-/**
- * Delete data from localStorage
- */
-export function deleteFromStorage(key: StorageKey): boolean {
-  try {
-    localStorage.removeItem(key)
-    console.log(`🗑️ Storage: Successfully deleted data for key '${key}'`)
-    return true
-  } catch (error) {
-    console.error(`❌ Failed to delete data for key '${key}':`, error)
-    return false
-  }
-}
-
-/**
- * React hook for simple storage
- */
 export function useSimpleStorage<T>(
   key: StorageKey,
   defaultValue: T
@@ -71,27 +22,58 @@ export function useSimpleStorage<T>(
   const [data, setData] = React.useState<T>(defaultValue)
   const [isLoading, setIsLoading] = React.useState(true)
   
-  // Load data on mount
   React.useEffect(() => {
-    console.log(`🔄 Loading data for key: ${key}`)
-    const storedData = readFromStorage<T>(key)
-    if (storedData !== null) {
-      setData(storedData)
-      console.log(`✅ Loaded data for key: ${key}`)
-    } else {
-      console.log(`ℹ️ No stored data for key: ${key}, using default`)
+    // aiMessages fallback to local storage
+    if (key === STORAGE_KEYS.AI_MESSAGES || !localStorage.getItem('token')) {
+      const stored = localStorage.getItem(key);
+      if (stored) setData(JSON.parse(stored));
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false)
+
+    const endpoint = key === STORAGE_KEYS.NOTES ? '/notes' : '/tasks';
+    
+    fetch(API_BASE + endpoint, { headers: getHeaders() })
+      .then(res => res.json())
+      .then(fetchedData => {
+        if (!fetchedData.error) {
+          setData(fetchedData as unknown as T);
+        } else {
+          // If token expired or error, fallback to local for safety
+          const stored = localStorage.getItem(key);
+          if (stored) setData(JSON.parse(stored));
+        }
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch from DB', err);
+        const stored = localStorage.getItem(key);
+        if (stored) setData(JSON.parse(stored));
+        setIsLoading(false);
+      });
   }, [key])
   
   // Save data function
   const saveData = React.useCallback((value: T): boolean => {
-    const success = writeToStorage(key, value)
-    if (success) {
-      setData(value)
+    setData(value);
+    
+    // Always save to local cache for offline/optimistic
+    localStorage.setItem(key, JSON.stringify(value));
+    
+    if (key === STORAGE_KEYS.AI_MESSAGES || !localStorage.getItem('token')) {
+      return true;
     }
-    return success
-  }, [key])
+
+    const endpoint = key === STORAGE_KEYS.NOTES ? '/sync/notes' : '/sync/tasks';
+    
+    fetch(API_BASE + endpoint, { 
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(value)
+    }).catch(err => console.error('Sync failed', err));
+
+    return true;
+  }, [key]);
   
   return [data, saveData, isLoading]
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import { useAuth } from "./contexts/AuthContext";
+import { LoginScreen } from "./components/LoginScreen";
 import Home from './note/Home';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -276,6 +278,10 @@ function AppShell() {
 }
 
 export default function App() {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (!isAuthenticated) return <LoginScreen />;
+
   return (
     <NotesProvider>
       <AppShell />
