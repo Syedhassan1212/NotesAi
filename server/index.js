@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = 'mongodb+srv://nh31097_db_user:qwerty123@passwordisqwerty123.xfx90zv.mongodb.net/'
+const MONGODB_URI = process.env.MONGODB_URI
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey123';
 
 // Models
