@@ -8,7 +8,7 @@ export const STORAGE_KEYS = {
 
 type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS]
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',
