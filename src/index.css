@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@config "../tailwind.config.cjs";
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+}
+
+/* Enhanced Editor Styles */
+.enhanced-editor-container {
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.enhanced-editor-container .ProseMirror {
+  background: transparent;
+  min-height: 400px;
+  padding: 1rem;
+  outline: none;
+}
+
+/* Fix Quill minimum height */
+.ql-container.ql-snow {
+  min-height: 400px;
+}
