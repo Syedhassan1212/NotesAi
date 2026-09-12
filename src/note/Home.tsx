@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function Home({ onOpen }: Props) {
-  const { notes } = useNotes();
+  const { notes, syncStatus } = useNotes();
   const [viewMode, setViewMode] = useState<'list' | 'grid' | 'split'>('list');
   const [tasks, setTasks] = useSimpleStorage<Task[]>(STORAGE_KEYS.TASKS, []);
 
@@ -165,11 +165,11 @@ export default function Home({ onOpen }: Props) {
                   <span className="material-symbols-outlined text-[18px]">cloud_done</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-label-md text-label-md text-on-surface">Encrypted Vault</span>
-                  <span className="font-code-sm text-code-sm text-text-tertiary">Zero-knowledge local mirror</span>
+                  <span className="font-label-md text-label-md text-on-surface">Cloud Vault</span>
+                  <span className="font-code-sm text-code-sm text-text-tertiary">End-to-End Encrypted Cloud Sync</span>
                 </div>
               </div>
-              <span className="font-code-sm text-code-sm text-primary font-medium">100% Synced</span>
+              <span className="font-code-sm text-code-sm text-primary font-medium">{syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'error' ? 'Sync Error' : '100% Synced'}</span>
             </div>
           </aside>
         </div>

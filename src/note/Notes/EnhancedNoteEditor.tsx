@@ -1,3 +1,4 @@
+import { useNotes } from "../../contexts/NotesContext";
 import React, { useCallback, useState, useEffect } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 
@@ -233,6 +234,7 @@ function debounce(func: any, wait: number) {
 }
 
 export default function EnhancedNoteEditor({ note, onChange, onSave, onBack }: Props) {
+  const { syncStatus } = useNotes();
   const { resolvedTheme } = useTheme();
   const [content, setContent] = useState(note.content || '')
   const [title, setTitle] = useState(note.title || '')
@@ -821,8 +823,22 @@ export default function EnhancedNoteEditor({ note, onChange, onSave, onBack }: P
           <div>{Math.max(1, Math.ceil((note.content ? note.content.replace(/<[^>]*>/g, '').split(' ').length : 0) / 200))} min read</div>
           <div className="w-1 h-1 rounded-full bg-outline-variant"></div>
           <div className="flex items-center gap-1 text-text-tertiary">
-            <span className="material-symbols-outlined text-[14px]">sync</span>
-            <span>Markdown synced</span>
+            {syncStatus === 'syncing' ? (
+              <>
+                <span className="material-symbols-outlined text-[14px] animate-spin">sync</span>
+                <span>Syncing...</span>
+              </>
+            ) : syncStatus === 'error' ? (
+              <>
+                <span className="material-symbols-outlined text-[14px] text-error">cloud_off</span>
+                <span className="text-error">Sync failed</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-[14px]">cloud_done</span>
+                <span>Saved to cloud</span>
+              </>
+            )}
           </div>
         </div>
       </aside>

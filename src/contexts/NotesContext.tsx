@@ -14,15 +14,16 @@ interface NotesContextType {
   notes: Note[];
   setNotes: (notes: Note[]) => boolean;
   isNotesLoading: boolean;
+  syncStatus: string;
 }
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
 export function NotesProvider({ children }: { children: ReactNode }) {
-  const [notes, setNotes, isNotesLoading] = useSimpleStorage<Note[]>(STORAGE_KEYS.NOTES, []);
+  const [notes, setNotes, isNotesLoading, syncStatus] = useSimpleStorage<Note[]>(STORAGE_KEYS.NOTES, []);
 
   return (
-    <NotesContext.Provider value={{ notes, setNotes, isNotesLoading }}>
+    <NotesContext.Provider value={{ notes, setNotes, isNotesLoading, syncStatus }}>
       {children}
     </NotesContext.Provider>
   );

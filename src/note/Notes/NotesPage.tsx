@@ -1,3 +1,4 @@
+import { useNotes } from "../../contexts/NotesContext";
 import { useState } from 'react';
 export type Note = {
   id: string;
@@ -25,6 +26,7 @@ export default function NotesPage({
   onFilterChange, 
   filter
 }: Props) {
+  const { syncStatus } = useNotes();
   const [viewMode, setViewMode] = useState<'gallery' | 'list' | 'table'>('gallery');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'createdAt' | 'title'>('updatedAt');
 
@@ -207,11 +209,11 @@ export default function NotesPage({
 <div className="mt-space-xl p-space-lg bg-surface-container-low rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
 <div className="flex items-center gap-space-md">
 <div className="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-sm text-primary">
-<span className="material-symbols-outlined text-[20px]">sync</span>
+{syncStatus === 'syncing' ? <span className="material-symbols-outlined text-[20px] animate-spin">sync</span> : syncStatus === 'error' ? <span className="material-symbols-outlined text-[20px] text-error">cloud_off</span> : <span className="material-symbols-outlined text-[20px]">cloud_done</span>}
 </div>
 <div>
-<div className="font-label-md text-label-md text-text-primary font-semibold">Local Storage In Sync</div>
-<div className="font-body-sm text-body-sm text-text-tertiary">All {notes.length + 6} notes encrypted on-device. Zero cloud exposure.</div>
+<div className="font-label-md text-label-md text-text-primary font-semibold">{syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'error' ? 'Offline' : 'Cloud Synced'}</div>
+<div className="font-body-sm text-body-sm text-text-tertiary">All {notes.length} notes securely backed up to your MongoDB cluster.</div>
 </div>
 </div>
 <div className="flex items-center gap-space-sm">

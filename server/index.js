@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/notesai';
+const MONGODB_URI = 'mongodb+srv://nh31097_db_user:qwerty123@passwordisqwerty123.xfx90zv.mongodb.net/'
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey123';
 
 // Models
@@ -44,7 +44,9 @@ app.post('/api/auth/register', async (req, res) => {
     if (existing) return res.status(400).json({ error: 'Username taken' });
     
     const user = new User({ username, password });
+    console.log('Before save');
     await user.save();
+    console.log('After save');
     
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, username });
@@ -149,7 +151,12 @@ app.post('/api/sync/notes', authMiddleware, async (req, res) => {
   try {
     const notes = req.body;
     await Note.deleteMany({ userId: req.userId });
-    const newNotes = notes.map(n => ({ ...n, userId: req.userId, _id: n.id ? n.id : new mongoose.Types.ObjectId() }));
+    const newNotes = notes.map(n => {
+      const noteData = { ...n, userId: req.userId };
+      if (mongoose.Types.ObjectId.isValid(n.id)) noteData._id = n.id;
+      delete noteData.id;
+      return noteData;
+    });
     await Note.insertMany(newNotes);
     res.json({ success: true });
   } catch (err) { console.error('API Error:', err); res.status(500).json({ error: 'Server error: ' + err.message }); }
@@ -159,7 +166,12 @@ app.post('/api/sync/tasks', authMiddleware, async (req, res) => {
   try {
     const tasks = req.body;
     await Task.deleteMany({ userId: req.userId });
-    const newTasks = tasks.map(t => ({ ...t, userId: req.userId, _id: t.id ? t.id : new mongoose.Types.ObjectId() }));
+    const newTasks = tasks.map(t => {
+      const taskData = { ...t, userId: req.userId };
+      if (mongoose.Types.ObjectId.isValid(t.id)) taskData._id = t.id;
+      delete taskData.id;
+      return taskData;
+    });
     await Task.insertMany(newTasks);
     res.json({ success: true });
   } catch (err) { console.error('API Error:', err); res.status(500).json({ error: 'Server error: ' + err.message }); }
