@@ -244,14 +244,6 @@ export default function LearningPage() {
         {/* Header / Command Greeting */}
         <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2">
           <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
-              <span className="font-code text-label-sm text-text-muted tracking-wider uppercase">Personal OS // Learning</span>
-              <span className="w-1 h-1 rounded-full bg-surface-variant"></span>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-low text-text-secondary font-code text-label-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                <span>Intellectual Capital</span>
-              </div>
-            </div>
             <h1 className="font-display text-display text-text-primary tracking-tight">
               Learning & Intellectual Capital
             </h1>

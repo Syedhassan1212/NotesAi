@@ -66,11 +66,6 @@ export default function NotesPage({
       <div className="relative w-full mb-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="font-code text-label-sm text-text-muted uppercase tracking-wider">Cognitive Vault</span>
-              <span className="w-1 h-1 rounded-full bg-surface-variant"></span>
-              
-            </div>
             <div className="flex items-baseline gap-3">
               <h1 className="font-display text-display text-text-primary tracking-tight font-bold">All Notes</h1>
               <span className="font-body-md text-text-muted font-normal" id="note-counter">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</span>
