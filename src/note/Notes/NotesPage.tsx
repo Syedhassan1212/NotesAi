@@ -69,7 +69,7 @@ export default function NotesPage({
             <div className="flex items-center gap-2 mb-1.5">
               <span className="font-code text-label-sm text-text-muted uppercase tracking-wider">Cognitive Vault</span>
               <span className="w-1 h-1 rounded-full bg-surface-variant"></span>
-              <span className="font-code text-label-sm text-text-muted">Indexed via CoreML</span>
+              
             </div>
             <div className="flex items-baseline gap-3">
               <h1 className="font-display text-display text-text-primary tracking-tight font-bold">All Notes</h1>

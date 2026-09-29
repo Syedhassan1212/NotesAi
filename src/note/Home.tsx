@@ -152,9 +152,7 @@ export default function Home({ onOpen, onNew }: Props) {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-                {currentDateFormatted} • Workspace Active
-              </span>
+              
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-text-primary">
               {greeting}, {displayName}.
